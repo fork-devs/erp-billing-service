@@ -1,0 +1,10 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    show-sql: false
+
+erp:
+  factos:
+    base-url: ${FACTOS_BASE_URL:https://factos-reva.onrender.com}
