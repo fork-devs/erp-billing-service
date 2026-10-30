@@ -1,0 +1,83 @@
+server:
+  port: ${SERVER_PORT:8086}
+  forward-headers-strategy: framework
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: erp-billing-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/erp_billing_db}
+    username: ${SPRING_DATASOURCE_USERNAME:erp_billing_app}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 30000
+      pool-name: BillingHikariPool
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    user: ${SPRING_FLYWAY_USER:erp_billing_owner}
+    password: ${SPRING_FLYWAY_PASSWORD:}
+    placeholders:
+      appRolePassword: ${ERP_APP_DB_PASSWORD:}
+
+erp:
+  auth:
+    jwks-url: ${JWKS_URL:https://auth.erp-automotriz.com/.well-known/jwks.json}
+  factos:
+    base-url: ${FACTOS_BASE_URL:https://factos-reva.onrender.com}
+    api-key: ${FACTOS_API_KEY:}
+  outbox:
+    relay-enabled: ${OUTBOX_RELAY_ENABLED:true}
+    poll-interval-ms: ${OUTBOX_POLL_INTERVAL_MS:5000}
+    batch-size: ${OUTBOX_BATCH_SIZE:20}
+    max-attempts: ${OUTBOX_MAX_ATTEMPTS:7}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      factos:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        register-health-indicator: true
+  timelimiter:
+    instances:
+      factos:
+        timeout-duration: 10s
+  retry:
+    instances:
+      factos:
+        max-attempts: 2
+        wait-duration: 1s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
