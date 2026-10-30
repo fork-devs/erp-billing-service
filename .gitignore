@@ -5,6 +5,9 @@
 *.pem
 *.key
 
+# Documentation (stored in root workspace docs)
+docs/
+
 # Maven & Build
 HELP.md
 target/
