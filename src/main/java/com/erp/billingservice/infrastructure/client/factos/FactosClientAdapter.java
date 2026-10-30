@@ -28,6 +28,7 @@ public class FactosClientAdapter implements FiscalProviderPort {
     private final RestClient restClient;
     private final String apiKey;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public FactosClientAdapter(
             RestClient.Builder restClientBuilder,
             @Value("${erp.factos.base-url:https://factos-reva.onrender.com}") String baseUrl,

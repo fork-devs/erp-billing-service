@@ -34,6 +34,7 @@ public class GlobalRestExceptionHandler {
         this(null);
     }
 
+    @org.springframework.beans.factory.annotation.Autowired
     public GlobalRestExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
