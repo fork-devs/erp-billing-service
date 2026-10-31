@@ -62,14 +62,14 @@ public class GlobalRestExceptionHandler {
         return problem("BILLING_DOMAIN_VALIDATION_ERROR", HttpStatus.BAD_REQUEST, ex.getMessage(), request);
     }
 
-    @ExceptionHandler(InvoiceNotFoundException.class)
-    public ProblemDetail handleNotFound(InvoiceNotFoundException ex, WebRequest request) {
+    @ExceptionHandler({InvoiceNotFoundException.class, com.erp.billingservice.domain.exception.QuoteNotFoundException.class})
+    public ProblemDetail handleNotFound(RuntimeException ex, WebRequest request) {
         String detail = getMessage("error.billing.not-found.detail", ex.getMessage());
         return problem("BILLING_NOT_FOUND", HttpStatus.NOT_FOUND, detail, request);
     }
 
-    @ExceptionHandler(InvoiceConflictException.class)
-    public ProblemDetail handleConflict(InvoiceConflictException ex, WebRequest request) {
+    @ExceptionHandler({InvoiceConflictException.class, com.erp.billingservice.domain.exception.QuoteConflictException.class})
+    public ProblemDetail handleConflict(RuntimeException ex, WebRequest request) {
         String detail = getMessage("error.billing.conflict.detail", ex.getMessage());
         return problem("BILLING_CONFLICT", HttpStatus.CONFLICT, detail, request);
     }

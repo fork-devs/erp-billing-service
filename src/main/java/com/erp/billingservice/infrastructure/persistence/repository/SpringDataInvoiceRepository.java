@@ -14,6 +14,8 @@ public interface SpringDataInvoiceRepository extends JpaRepository<InvoiceEntity
 
     Optional<InvoiceEntity> findByWorkOrderId(UUID workOrderId);
 
+    Optional<InvoiceEntity> findByQuoteId(UUID quoteId);
+
     Optional<InvoiceEntity> findByTenantIdAndSeriesAndCorrelativo(UUID tenantId, String series, Integer correlativo);
 
     @Query("SELECT COALESCE(MAX(i.correlativo), 0) FROM InvoiceEntity i WHERE i.tenantId = :tenantId AND i.series = :series")

@@ -30,6 +30,7 @@ public final class InvoiceEntityMapper {
                 entity.getId(),
                 entity.getTenantId(),
                 entity.getWorkOrderId(),
+                entity.getQuoteId(),
                 VoucherType.valueOf(entity.getVoucherType()),
                 new Series(entity.getSeries()),
                 new Correlative(entity.getCorrelativo()),
@@ -67,6 +68,7 @@ public final class InvoiceEntityMapper {
         entity.setId(domain.getId());
         entity.setTenantId(domain.getTenantId());
         entity.setWorkOrderId(domain.getWorkOrderId());
+        entity.setQuoteId(domain.getQuoteId());
         entity.setVoucherType(domain.getVoucherType().name());
         entity.setSeries(domain.getSeries().getValue());
         entity.setCorrelativo(domain.getCorrelative().getValue());
