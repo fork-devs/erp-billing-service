@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/billing/quotes")
+@RequestMapping({"/api/v1/billing/quotes", "/api/v1/quotes"})
 @Validated
 public class QuoteController {
 

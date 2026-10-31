@@ -1,5 +1,6 @@
 package com.erp.billingservice.interfaces.rest.controller;
 
+import com.erp.billingservice.application.usecase.ExecuteCheckoutUseCase;
 import com.erp.billingservice.application.usecase.GetInvoiceUseCase;
 import com.erp.billingservice.application.usecase.RegisterPaymentUseCase;
 import com.erp.billingservice.domain.exception.InvoiceNotFoundException;
@@ -8,6 +9,7 @@ import com.erp.billingservice.domain.model.Invoice;
 import com.erp.billingservice.domain.model.Payment;
 import com.erp.billingservice.domain.port.InvoiceRepositoryPort;
 import com.erp.billingservice.domain.port.PaymentRepositoryPort;
+import com.erp.billingservice.interfaces.rest.dto.DirectCheckoutRequest;
 import com.erp.billingservice.interfaces.rest.dto.VoucherPaymentRequest;
 import com.erp.billingservice.interfaces.rest.dto.VoucherResponse;
 import jakarta.validation.Valid;
@@ -29,6 +31,7 @@ public class VoucherController {
     private final GetInvoiceUseCase getInvoiceUseCase;
     private final RegisterPaymentUseCase registerPaymentUseCase;
     private final PaymentRepositoryPort paymentRepository;
+    private final ExecuteCheckoutUseCase executeCheckoutUseCase;
 
     public VoucherController(
             InvoiceRepositoryPort invoiceRepository,
@@ -36,11 +39,42 @@ public class VoucherController {
             RegisterPaymentUseCase registerPaymentUseCase,
             PaymentRepositoryPort paymentRepository
     ) {
+        this(invoiceRepository, getInvoiceUseCase, registerPaymentUseCase, paymentRepository, null);
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public VoucherController(
+            InvoiceRepositoryPort invoiceRepository,
+            GetInvoiceUseCase getInvoiceUseCase,
+            RegisterPaymentUseCase registerPaymentUseCase,
+            PaymentRepositoryPort paymentRepository,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) ExecuteCheckoutUseCase executeCheckoutUseCase
+    ) {
         this.invoiceRepository = invoiceRepository;
         this.getInvoiceUseCase = getInvoiceUseCase;
         this.registerPaymentUseCase = registerPaymentUseCase;
         this.paymentRepository = paymentRepository;
+        this.executeCheckoutUseCase = executeCheckoutUseCase;
     }
+
+    @PostMapping
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
+    public ResponseEntity<VoucherResponse> emitVoucher(@Valid @RequestBody DirectCheckoutRequest request) {
+        if (executeCheckoutUseCase != null) {
+            ExecuteCheckoutUseCase.DirectCheckoutCommand command = new ExecuteCheckoutUseCase.DirectCheckoutCommand(
+                    request.quoteId(),
+                    request.resolvedVoucherType(),
+                    request.customerDocumentType(),
+                    request.customerDocumentNumber(),
+                    request.customerName(),
+                    request.method() != null ? request.method() : "CASH"
+            );
+            ExecuteCheckoutUseCase.CheckoutResult result = executeCheckoutUseCase.executeDirectCheckout(command);
+            return ResponseEntity.status(HttpStatus.CREATED).body(VoucherResponse.from(result.invoice(), List.of(result.payment())));
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 
     @GetMapping("/{voucherId}")
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
