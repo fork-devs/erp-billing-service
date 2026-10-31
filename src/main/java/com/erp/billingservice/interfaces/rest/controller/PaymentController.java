@@ -33,7 +33,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<PaymentResponse> registerPayment(
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @Valid @RequestBody RegisterPaymentRequest request
@@ -52,7 +52,7 @@ public class PaymentController {
     }
 
     @GetMapping("/invoice/{invoiceId}")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR', 'MECANICO')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<List<PaymentResponse>> getPaymentsByInvoiceId(@PathVariable UUID invoiceId) {
         List<Payment> payments = paymentRepositoryPort.findByInvoiceId(invoiceId);
         List<PaymentResponse> responses = payments.stream()

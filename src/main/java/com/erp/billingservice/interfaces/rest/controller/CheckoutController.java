@@ -23,7 +23,7 @@ public class CheckoutController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<CheckoutResponse> directCheckout(@Valid @RequestBody DirectCheckoutRequest request) {
         ExecuteCheckoutUseCase.DirectCheckoutCommand command = new ExecuteCheckoutUseCase.DirectCheckoutCommand(
                 request.quoteId(),
@@ -39,7 +39,7 @@ public class CheckoutController {
     }
 
     @PostMapping("/mercadopago")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<CheckoutResponse> mercadoPagoCheckout(@Valid @RequestBody MercadoPagoCheckoutRequest request) {
         ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand command = new ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand(
                 request.quoteId(),

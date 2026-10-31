@@ -44,7 +44,7 @@ public class InvoiceController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<InvoiceResponse> emitInvoice(@Valid @RequestBody EmitInvoiceRequest request) {
         List<EmitInvoiceUseCase.InvoiceItemCommand> itemCommands = request.items().stream()
                 .map(item -> new EmitInvoiceUseCase.InvoiceItemCommand(
@@ -71,7 +71,7 @@ public class InvoiceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR', 'MECANICO')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<List<InvoiceResponse>> listInvoices(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -84,7 +84,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR', 'MECANICO')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<InvoiceResponse> getInvoiceById(@PathVariable UUID id) {
         Invoice invoice = getInvoiceUseCase.getById(id)
                 .orElseThrow(() -> new InvoiceNotFoundException(id));
@@ -92,7 +92,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}/pdf")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR', 'MECANICO')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<byte[]> downloadPdf(@PathVariable UUID id) {
         byte[] pdfBytes = getInvoicePdfUseCase.getPdf(id);
         HttpHeaders headers = new HttpHeaders();
@@ -102,7 +102,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/{id}/void")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER')")
     public ResponseEntity<InvoiceResponse> voidInvoice(
             @PathVariable UUID id,
             @Valid @RequestBody VoidInvoiceRequest request

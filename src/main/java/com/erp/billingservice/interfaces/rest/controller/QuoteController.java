@@ -31,7 +31,7 @@ public class QuoteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<QuoteResponse> createQuote(@Valid @RequestBody CreateQuoteRequest request) {
         CreateQuoteUseCase.CreateQuoteCommand command = new CreateQuoteUseCase.CreateQuoteCommand(
                 request.workOrderId(),
@@ -44,14 +44,14 @@ public class QuoteController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<QuoteResponse> getQuote(@PathVariable UUID id) {
         Quote quote = manageQuoteUseCase.getQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(quote));
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<List<QuoteResponse>> listQuotes(
             @RequestParam UUID branchId,
             @RequestParam(required = false) QuoteStatus status
@@ -61,7 +61,7 @@ public class QuoteController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<QuoteResponse> updateDiscount(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateQuoteDiscountRequest request
@@ -71,21 +71,21 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/approvals")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<QuoteResponse> approveQuote(@PathVariable UUID id) {
         Quote approved = manageQuoteUseCase.approveQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(approved));
     }
 
     @PostMapping("/{id}/cancellations")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<QuoteResponse> cancelQuote(@PathVariable UUID id) {
         Quote canceled = manageQuoteUseCase.cancelQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(canceled));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<QuoteResponse> deleteQuote(@PathVariable UUID id) {
         Quote canceled = manageQuoteUseCase.cancelQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(canceled));
