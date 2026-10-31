@@ -40,6 +40,11 @@ public class InvoicePersistenceAdapter implements InvoiceRepositoryPort {
     }
 
     @Override
+    public Optional<Invoice> findByQuoteId(UUID quoteId) {
+        return repository.findByQuoteId(quoteId).map(InvoiceEntityMapper::toDomain);
+    }
+
+    @Override
     public Optional<Invoice> findBySeriesAndCorrelative(UUID tenantId, String series, int correlative) {
         return repository.findByTenantIdAndSeriesAndCorrelativo(tenantId, series, correlative)
                 .map(InvoiceEntityMapper::toDomain);

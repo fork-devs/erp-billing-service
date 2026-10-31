@@ -17,6 +17,7 @@ public class Invoice {
     private final UUID id;
     private final UUID tenantId;
     private final UUID workOrderId;
+    private final UUID quoteId;
     private final VoucherType voucherType;
     private final Series series;
     private final Correlative correlative;
@@ -37,6 +38,15 @@ public class Invoice {
     private Instant voidedAt;
 
     public Invoice(UUID id, UUID tenantId, UUID workOrderId, VoucherType voucherType,
+                   Series series, Correlative correlative, String customerDocument,
+                   String customerName, Currency currency, List<InvoiceLine> lines,
+                   InvoiceStatus sunatStatus, String pdfUrl, String qrContent,
+                   String voidReason, Instant issuedAt, Instant voidedAt) {
+        this(id, tenantId, workOrderId, null, voucherType, series, correlative, customerDocument,
+                customerName, currency, lines, sunatStatus, pdfUrl, qrContent, voidReason, issuedAt, voidedAt);
+    }
+
+    public Invoice(UUID id, UUID tenantId, UUID workOrderId, UUID quoteId, VoucherType voucherType,
                    Series series, Correlative correlative, String customerDocument,
                    String customerName, Currency currency, List<InvoiceLine> lines,
                    InvoiceStatus sunatStatus, String pdfUrl, String qrContent,
@@ -74,6 +84,7 @@ public class Invoice {
         this.id = id != null ? id : UUID.randomUUID();
         this.tenantId = tenantId;
         this.workOrderId = workOrderId;
+        this.quoteId = quoteId;
         this.voucherType = voucherType;
         this.series = series;
         this.correlative = correlative;
@@ -161,6 +172,10 @@ public class Invoice {
 
     public UUID getWorkOrderId() {
         return workOrderId;
+    }
+
+    public UUID getQuoteId() {
+        return quoteId;
     }
 
     public VoucherType getVoucherType() {

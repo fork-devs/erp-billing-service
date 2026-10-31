@@ -20,6 +20,9 @@ public class InvoiceEntity {
     @Column(name = "work_order_id", nullable = false)
     private UUID workOrderId;
 
+    @Column(name = "quote_id")
+    private UUID quoteId;
+
     @Column(name = "voucher_type", nullable = false, length = 20)
     private String voucherType;
 
@@ -93,6 +96,14 @@ public class InvoiceEntity {
 
     public void setWorkOrderId(UUID workOrderId) {
         this.workOrderId = workOrderId;
+    }
+
+    public UUID getQuoteId() {
+        return quoteId;
+    }
+
+    public void setQuoteId(UUID quoteId) {
+        this.quoteId = quoteId;
     }
 
     public String getVoucherType() {
