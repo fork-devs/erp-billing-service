@@ -23,6 +23,7 @@ public class WorkOrderClientAdapter implements WorkOrderClientPort {
 
     private final RestClient restClient;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public WorkOrderClientAdapter(
             RestClient.Builder restClientBuilder,
             @Value("${erp.clients.work-order.url:http://erp-work-order-service:8088}") String baseUrl

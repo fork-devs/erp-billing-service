@@ -20,6 +20,7 @@ public class MercadoPagoClientAdapter implements MercadoPagoClientPort {
     private final RestClient restClient;
     private final String accessToken;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public MercadoPagoClientAdapter(
             RestClient.Builder restClientBuilder,
             @Value("${erp.mercadopago.base-url:https://api.mercadopago.com}") String baseUrl,

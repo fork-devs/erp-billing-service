@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping({"/api/v1/billing/quotes", "/api/v1/quotes"})
+@RequestMapping("/api/v1/billing/quotes")
 @Validated
 public class QuoteController {
 
@@ -70,14 +70,14 @@ public class QuoteController {
         return ResponseEntity.ok(QuoteResponse.from(updated));
     }
 
-    @PostMapping({"/{id}/approvals", "/{id}/approve"})
+    @PostMapping("/{id}/approvals")
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
     public ResponseEntity<QuoteResponse> approveQuote(@PathVariable UUID id) {
         Quote approved = manageQuoteUseCase.approveQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(approved));
     }
 
-    @PostMapping({"/{id}/cancellations", "/{id}/cancel"})
+    @PostMapping("/{id}/cancellations")
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'ADMIN_TALLER', 'ASESOR')")
     public ResponseEntity<QuoteResponse> cancelQuote(@PathVariable UUID id) {
         Quote canceled = manageQuoteUseCase.cancelQuote(id);
