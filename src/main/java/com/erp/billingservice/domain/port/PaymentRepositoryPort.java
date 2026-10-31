@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface PaymentRepositoryPort {
     Payment save(Payment payment);
+    Optional<Payment> findById(UUID id);
     Optional<Payment> findByIdempotencyKey(UUID tenantId, String idempotencyKey);
     List<Payment> findByInvoiceId(UUID invoiceId);
+    void deleteById(UUID id);
 }

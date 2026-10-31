@@ -28,6 +28,11 @@ public class PaymentPersistenceAdapter implements PaymentRepositoryPort {
     }
 
     @Override
+    public Optional<Payment> findById(UUID id) {
+        return repository.findById(id).map(PaymentEntityMapper::toDomain);
+    }
+
+    @Override
     public Optional<Payment> findByIdempotencyKey(UUID tenantId, String idempotencyKey) {
         return repository.findByTenantIdAndIdempotencyKey(tenantId, idempotencyKey)
                 .map(PaymentEntityMapper::toDomain);
@@ -38,5 +43,10 @@ public class PaymentPersistenceAdapter implements PaymentRepositoryPort {
         return repository.findAllByInvoiceIdOrderByCreatedAtDesc(invoiceId).stream()
                 .map(PaymentEntityMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        repository.deleteById(id);
     }
 }
