@@ -44,7 +44,7 @@ erp:
   auth:
     jwks-url: ${JWKS_URL:https://auth.erp-automotriz.com/.well-known/jwks.json}
   factos:
-    base-url: ${FACTOS_BASE_URL:https://factos-reva.onrender.com}
+    base-url: ${FACTOS_BASE_URL:https://factos-hwjz.onrender.com}
     api-key: ${FACTOS_API_KEY:}
   outbox:
     relay-enabled: ${OUTBOX_RELAY_ENABLED:true}
