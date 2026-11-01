@@ -5,6 +5,9 @@
 *.pem
 *.key
 
+# Documentation (stored in root workspace docs)
+docs/
+
 # Maven & Build
 HELP.md
 target/
@@ -41,3 +44,7 @@ build/
 logs/
 .DS_Store
 Thumbs.db
+
+# Local tooling & specifications
+openspec/
+.opencode/
