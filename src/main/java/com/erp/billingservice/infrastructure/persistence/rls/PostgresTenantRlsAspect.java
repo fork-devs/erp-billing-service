@@ -24,19 +24,25 @@ public class PostgresTenantRlsAspect {
         this.entityManager = entityManager;
     }
 
-    @Before("execution(* com.erp.billingservice.infrastructure.persistence.adapter..*(..))")
+    @Before("execution(* com.erp.billingservice.infrastructure.persistence.adapter..*(..)) && "
+            + "!execution(* com.erp.billingservice.infrastructure.persistence.adapter.OutboxPersistenceAdapter.*(..))")
     public void applyTenantContext() {
         if (!TransactionSynchronizationManager.isActualTransactionActive()) {
-            return;
+            throw new IllegalStateException("Active transaction required for tenant-scoped persistence operation");
         }
 
         UUID tenantId = TenantContextHolder.getTenantId();
-        if (tenantId != null) {
-            try {
-                entityManager.createNativeQuery("SET LOCAL app.tenant_id = '" + tenantId + "'").executeUpdate();
-            } catch (Exception e) {
-                log.debug("Could not execute SET LOCAL app.tenant_id (expected in H2/mock environments): {}", e.getMessage());
-            }
+        if (tenantId == null) {
+            throw new TenantContextMissingException("TenantContextHolder is empty: cannot execute tenant-scoped persistence operation");
+        }
+        if (new UUID(0L, 0L).equals(tenantId)) {
+            throw new TenantContextMissingException("Nil tenant UUID is not permitted");
+        }
+
+        try {
+            entityManager.createNativeQuery("SET LOCAL app.tenant_id = '" + tenantId + "'").executeUpdate();
+        } catch (Exception e) {
+            log.debug("Could not execute SET LOCAL app.tenant_id (expected in H2/mock environments): {}", e.getMessage());
         }
     }
 }

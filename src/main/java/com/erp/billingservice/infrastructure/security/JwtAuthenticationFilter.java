@@ -72,11 +72,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            UUID tokenTenantId = UUID.fromString(tenantClaim);
+            UUID tokenTenantId;
+            try {
+                tokenTenantId = UUID.fromString(tenantClaim.trim());
+                if (new UUID(0L, 0L).equals(tokenTenantId)) {
+                    log.warn("JWT contains forbidden nil tenant_id");
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Nil tenant_id is not permitted");
+                    return;
+                }
+            } catch (IllegalArgumentException e) {
+                log.warn("JWT contains invalid tenant_id claim");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid tenant_id claim");
+                return;
+            }
 
             // Contrast X-Tenant-ID header if present
             if (tenantHeader != null && !tenantHeader.isBlank()) {
-                UUID headerTenantId = UUID.fromString(tenantHeader.trim());
+                UUID headerTenantId;
+                try {
+                    headerTenantId = UUID.fromString(tenantHeader.trim());
+                } catch (IllegalArgumentException e) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid X-Tenant-ID header");
+                    return;
+                }
                 if (!tokenTenantId.equals(headerTenantId)) {
                     log.warn("X-Tenant-ID mismatch: header={}, token={}", headerTenantId, tokenTenantId);
                     response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tenant header does not match authenticated token");
