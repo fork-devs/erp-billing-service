@@ -1,7 +1,5 @@
 package com.erp.billingservice.domain.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
 public enum VoucherType {
     INVOICE("01", "F"),
     RECEIPT("03", "B");
@@ -29,17 +27,5 @@ public enum VoucherType {
             }
         }
         throw new IllegalArgumentException("Unknown CPE code: " + cpeCode);
-    }
-
-    @JsonCreator
-    public static VoucherType fromString(String value) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Voucher type cannot be null or blank");
-        }
-        return switch (value.trim().toUpperCase()) {
-            case "INVOICE", "FACTURA" -> INVOICE;
-            case "RECEIPT", "BOLETA" -> RECEIPT;
-            default -> throw new IllegalArgumentException("Unknown voucher type: " + value);
-        };
     }
 }
