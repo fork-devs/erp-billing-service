@@ -31,7 +31,7 @@ class InvoiceCalculationTest {
         );
 
         Invoice invoice = new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.FACTURA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.INVOICE,
                 new Series("F004"), new Correlative(1), "20111222333",
                 "ENTERPRISE S.A.C.", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null
@@ -51,7 +51,7 @@ class InvoiceCalculationTest {
         );
 
         Invoice invoice = new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.BOLETA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678",
                 "JOHN DOE", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null
@@ -71,7 +71,7 @@ class InvoiceCalculationTest {
         );
 
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.FACTURA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.INVOICE,
                 new Series("F001"), new Correlative(1), "72345678", // 8-digit DNI
                 "ENTERPRISE", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null
@@ -87,7 +87,7 @@ class InvoiceCalculationTest {
         );
 
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.FACTURA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.INVOICE,
                 new Series("B001"), new Correlative(1), "20111222333",
                 "ENTERPRISE", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null
@@ -103,7 +103,7 @@ class InvoiceCalculationTest {
         );
 
         Invoice invoice = new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.BOLETA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678",
                 "CUSTOMER", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null

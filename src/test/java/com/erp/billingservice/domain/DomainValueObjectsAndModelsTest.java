@@ -95,11 +95,11 @@ class DomainValueObjectsAndModelsTest {
         assertNotEquals(s1, "F001");
         assertEquals(s1.hashCode(), s2.hashCode());
 
-        assertDoesNotThrow(() -> s1.validateFor(VoucherType.FACTURA));
-        assertThrows(DomainValidationException.class, () -> s1.validateFor(VoucherType.BOLETA));
+        assertDoesNotThrow(() -> s1.validateFor(VoucherType.INVOICE));
+        assertThrows(DomainValidationException.class, () -> s1.validateFor(VoucherType.RECEIPT));
 
-        assertDoesNotThrow(() -> s3.validateFor(VoucherType.BOLETA));
-        assertThrows(DomainValidationException.class, () -> s3.validateFor(VoucherType.FACTURA));
+        assertDoesNotThrow(() -> s3.validateFor(VoucherType.RECEIPT));
+        assertThrows(DomainValidationException.class, () -> s3.validateFor(VoucherType.INVOICE));
 
         assertThrows(DomainValidationException.class, () -> new Series(null));
         assertThrows(DomainValidationException.class, () -> new Series(""));
@@ -132,13 +132,13 @@ class DomainValueObjectsAndModelsTest {
     @Test
     @DisplayName("VoucherType enum methods")
     void testVoucherType() {
-        assertEquals("01", VoucherType.FACTURA.getCpeCode());
-        assertEquals("F", VoucherType.FACTURA.getSeriesPrefix());
-        assertEquals("03", VoucherType.BOLETA.getCpeCode());
-        assertEquals("B", VoucherType.BOLETA.getSeriesPrefix());
+        assertEquals("01", VoucherType.INVOICE.getCpeCode());
+        assertEquals("F", VoucherType.INVOICE.getSeriesPrefix());
+        assertEquals("03", VoucherType.RECEIPT.getCpeCode());
+        assertEquals("B", VoucherType.RECEIPT.getSeriesPrefix());
 
-        assertEquals(VoucherType.FACTURA, VoucherType.fromCpeCode("01"));
-        assertEquals(VoucherType.BOLETA, VoucherType.fromCpeCode("03"));
+        assertEquals(VoucherType.INVOICE, VoucherType.fromCpeCode("01"));
+        assertEquals(VoucherType.RECEIPT, VoucherType.fromCpeCode("03"));
         assertThrows(IllegalArgumentException.class, () -> VoucherType.fromCpeCode("99"));
     }
 
@@ -253,7 +253,7 @@ class DomainValueObjectsAndModelsTest {
         );
 
         Invoice invoice = new Invoice(
-                invoiceId, tenantId, workOrderId, quoteId, VoucherType.BOLETA,
+                invoiceId, tenantId, workOrderId, quoteId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(10), "72345678", "JOHN DOE",
                 Currency.PEN, List.of(line), InvoiceStatus.DRAFT, null, null, null,
                 Instant.now(), null
@@ -263,7 +263,7 @@ class DomainValueObjectsAndModelsTest {
         assertEquals(tenantId, invoice.getTenantId());
         assertEquals(workOrderId, invoice.getWorkOrderId());
         assertEquals(quoteId, invoice.getQuoteId());
-        assertEquals(VoucherType.BOLETA, invoice.getVoucherType());
+        assertEquals(VoucherType.RECEIPT, invoice.getVoucherType());
         assertEquals(new Series("B001"), invoice.getSeries());
         assertEquals(new Correlative(10), invoice.getCorrelative());
         assertEquals("72345678", invoice.getCustomerDocument());
@@ -282,7 +282,7 @@ class DomainValueObjectsAndModelsTest {
 
         // Equals & hash
         Invoice same = new Invoice(
-                invoiceId, tenantId, workOrderId, VoucherType.BOLETA,
+                invoiceId, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(11), "72345678", "JOHN",
                 null, List.of(line), null, null, null, null, null, null
         );
@@ -293,7 +293,7 @@ class DomainValueObjectsAndModelsTest {
 
         // Validation exceptions
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, null, workOrderId, VoucherType.BOLETA,
+                null, null, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678", "JOHN",
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
@@ -303,42 +303,42 @@ class DomainValueObjectsAndModelsTest {
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 null, new Correlative(1), "72345678", "JOHN",
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), null, "72345678", "JOHN",
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), null, "JOHN",
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "   ", "JOHN",
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678", null,
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678", "  ",
                 Currency.PEN, List.of(line), null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678", "JOHN",
                 Currency.PEN, null, null, null, null, null, null, null
         ));
         assertThrows(DomainValidationException.class, () -> new Invoice(
-                null, tenantId, workOrderId, VoucherType.BOLETA,
+                null, tenantId, workOrderId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "72345678", "JOHN",
                 Currency.PEN, Collections.emptyList(), null, null, null, null, null, null
         ));

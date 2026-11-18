@@ -1,8 +1,8 @@
 package com.erp.billingservice.domain.model;
 
 public enum VoucherType {
-    FACTURA("01", "F"),
-    BOLETA("03", "B");
+    INVOICE("01", "F"),
+    RECEIPT("03", "B");
 
     private final String cpeCode;
     private final String seriesPrefix;
