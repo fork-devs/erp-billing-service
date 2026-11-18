@@ -25,9 +25,9 @@ public record MercadoPagoCheckoutRequest(
         String paymentId
 ) {
     public VoucherType resolvedVoucherType() {
-        if ("INVOICE".equalsIgnoreCase(type) || "FACTURA".equalsIgnoreCase(type)) {
-            return VoucherType.FACTURA;
+        if ("INVOICE".equalsIgnoreCase(type) || "INVOICE".equalsIgnoreCase(type)) {
+            return VoucherType.INVOICE;
         }
-        return VoucherType.BOLETA;
+        return VoucherType.RECEIPT;
     }
 }

@@ -202,7 +202,7 @@ public class CheckoutApplicationService implements ExecuteCheckoutUseCase {
 
     private Invoice createAndEmitInvoice(UUID tenantId, Quote quote, VoucherType voucherType,
                                          String customerDoc, String customerName) {
-        String seriesStr = voucherType == VoucherType.FACTURA ? "F001" : "B001";
+        String seriesStr = voucherType == VoucherType.INVOICE ? "F001" : "B001";
         Series series = new Series(seriesStr);
         int nextCorrelative = invoiceRepository.getNextCorrelative(tenantId, series.getValue());
         Correlative correlative = new Correlative(nextCorrelative);

@@ -66,7 +66,7 @@ class VoucherControllerTest {
 
         InvoiceLine line = new InvoiceLine(UUID.randomUUID(), tenantId, "S1", "Service", BigDecimal.ONE, new BigDecimal("225.00"), "TAXABLE_ONEROUS");
         testInvoice = new Invoice(
-                voucherId, tenantId, workOrderId, quoteId, VoucherType.BOLETA,
+                voucherId, tenantId, workOrderId, quoteId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "48765432", "Maria Fernandez",
                 Currency.PEN, List.of(line), InvoiceStatus.ACCEPTED, "https://factos.com/pdf",
                 "QR", null, Instant.now(), null

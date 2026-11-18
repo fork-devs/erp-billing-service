@@ -21,10 +21,10 @@ public final class Series {
     }
 
     public void validateFor(VoucherType voucherType) {
-        if (voucherType == VoucherType.FACTURA && !value.startsWith("F")) {
+        if (voucherType == VoucherType.INVOICE && !value.startsWith("F")) {
             throw new DomainValidationException("Series for Factura must start with 'F' (e.g. F001)");
         }
-        if (voucherType == VoucherType.BOLETA && !value.startsWith("B")) {
+        if (voucherType == VoucherType.RECEIPT && !value.startsWith("B")) {
             throw new DomainValidationException("Series for Boleta must start with 'B' (e.g. B001)");
         }
     }

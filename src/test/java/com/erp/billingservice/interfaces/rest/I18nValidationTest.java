@@ -41,7 +41,7 @@ class I18nValidationTest {
     private static final String INVALID_INVOICE_REQUEST = """
             {
               "workOrderId": "00000000-0000-0000-0000-000000000001",
-              "voucherType": "FACTURA",
+              "voucherType": "INVOICE",
               "series": "",
               "customerDocument": "20123456789",
               "customerName": "EMPRESA S.A.C.",

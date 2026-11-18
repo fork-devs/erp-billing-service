@@ -15,15 +15,15 @@ CREATE TABLE IF NOT EXISTS invoices (
     total_taxable      NUMERIC(12,2) NOT NULL DEFAULT 0.00,
     total_igv          NUMERIC(12,2) NOT NULL DEFAULT 0.00,
     total_amount       NUMERIC(12,2) NOT NULL DEFAULT 0.00,
-    sunat_status       VARCHAR(30) NOT NULL DEFAULT 'BORRADOR',
+    sunat_status       VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
     pdf_url            VARCHAR(500),
     qr_content         TEXT,
     void_reason        TEXT,
     issued_at          TIMESTAMP NOT NULL DEFAULT now(),
     voided_at          TIMESTAMP,
     CONSTRAINT uq_invoice_tenant_series_correlativo UNIQUE (tenant_id, series, correlativo),
-    CONSTRAINT ck_invoice_voucher_type CHECK (voucher_type IN ('FACTURA', 'BOLETA')),
-    CONSTRAINT ck_invoice_sunat_status CHECK (sunat_status IN ('BORRADOR', 'PENDIENTE_SUNAT', 'ACEPTADO', 'OBSERVADO', 'ANULADO'))
+    CONSTRAINT ck_invoice_voucher_type CHECK (voucher_type IN ('INVOICE', 'RECEIPT')),
+    CONSTRAINT ck_invoice_sunat_status CHECK (sunat_status IN ('DRAFT', 'PENDING_SUNAT', 'ACCEPTED', 'OBSERVED', 'VOIDED'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_invoices_work_order ON invoices (tenant_id, work_order_id);
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS payments (
     id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id            UUID NOT NULL,
     invoice_id           UUID NOT NULL REFERENCES invoices(id) ON DELETE RESTRICT,
-    provider             VARCHAR(50) NOT NULL DEFAULT 'EFECTIVO',
+    provider             VARCHAR(50) NOT NULL DEFAULT 'CASH',
     provider_payment_id  VARCHAR(100),
     idempotency_key      VARCHAR(128) NOT NULL,
     amount               NUMERIC(12,2) NOT NULL,

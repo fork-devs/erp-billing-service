@@ -104,7 +104,7 @@ public class Invoice {
     }
 
     private static void validateCustomerDocument(VoucherType voucherType, String doc) {
-        if (voucherType == VoucherType.FACTURA) {
+        if (voucherType == VoucherType.INVOICE) {
             new Ruc(doc);
         } else {
             if (doc.length() == 8) {

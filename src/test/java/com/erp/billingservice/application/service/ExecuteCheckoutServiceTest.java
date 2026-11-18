@@ -90,7 +90,7 @@ class ExecuteCheckoutServiceTest {
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ExecuteCheckoutUseCase.DirectCheckoutCommand command = new ExecuteCheckoutUseCase.DirectCheckoutCommand(
-                quoteId, VoucherType.BOLETA, "DNI", "48765432", "Maria Fernandez", "CASH"
+                quoteId, VoucherType.RECEIPT, "DNI", "48765432", "Maria Fernandez", "CASH"
         );
 
         ExecuteCheckoutUseCase.CheckoutResult result = checkoutService.executeDirectCheckout(command);
@@ -114,7 +114,7 @@ class ExecuteCheckoutServiceTest {
         when(quoteRepository.findById(quoteId)).thenReturn(Optional.of(quote));
 
         ExecuteCheckoutUseCase.DirectCheckoutCommand command = new ExecuteCheckoutUseCase.DirectCheckoutCommand(
-                quoteId, VoucherType.BOLETA, "DNI", "48765432", "Maria Fernandez", "CASH"
+                quoteId, VoucherType.RECEIPT, "DNI", "48765432", "Maria Fernandez", "CASH"
         );
 
         assertThatThrownBy(() -> checkoutService.executeDirectCheckout(command))
@@ -147,7 +147,7 @@ class ExecuteCheckoutServiceTest {
         when(paymentRepository.save(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand command = new ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand(
-                quoteId, VoucherType.BOLETA, "DNI", "48765432", "Maria Fernandez", "mp-12345"
+                quoteId, VoucherType.RECEIPT, "DNI", "48765432", "Maria Fernandez", "mp-12345"
         );
 
         ExecuteCheckoutUseCase.CheckoutResult result = checkoutService.executeMercadoPagoCheckout(command);
@@ -173,7 +173,7 @@ class ExecuteCheckoutServiceTest {
         when(paymentRepository.findByIdempotencyKey(tenantId, "mp-12345")).thenReturn(Optional.of(existingPayment));
 
         ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand command = new ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand(
-                quoteId, VoucherType.BOLETA, "DNI", "48765432", "Maria Fernandez", "mp-12345"
+                quoteId, VoucherType.RECEIPT, "DNI", "48765432", "Maria Fernandez", "mp-12345"
         );
 
         ExecuteCheckoutUseCase.CheckoutResult result = checkoutService.executeMercadoPagoCheckout(command);
