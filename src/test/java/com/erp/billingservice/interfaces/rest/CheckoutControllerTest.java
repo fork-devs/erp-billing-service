@@ -55,7 +55,7 @@ class CheckoutControllerTest {
     void shouldExecuteDirectCheckout() throws Exception {
         InvoiceLine line = new InvoiceLine(UUID.randomUUID(), tenantId, "S1", "Service", BigDecimal.ONE, new BigDecimal("200.00"), "TAXABLE_ONEROUS");
         Invoice invoice = new Invoice(
-                invoiceId, tenantId, workOrderId, quoteId, VoucherType.BOLETA,
+                invoiceId, tenantId, workOrderId, quoteId, VoucherType.RECEIPT,
                 new Series("B001"), new Correlative(1), "48765432", "Maria Fernandez",
                 Currency.PEN, List.of(line), InvoiceStatus.ACCEPTED, "https://pdf.url",
                 "qr-content", null, Instant.now(), null
@@ -85,7 +85,7 @@ class CheckoutControllerTest {
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.quoteId").value(quoteId.toString()))
-                .andExpect(jsonPath("$.voucherType").value("BOLETA"))
+                .andExpect(jsonPath("$.voucherType").value("RECEIPT"))
                 .andExpect(jsonPath("$.series").value("B001"))
                 .andExpect(jsonPath("$.correlativo").value(1))
                 .andExpect(jsonPath("$.status").value("PAID"))
@@ -99,7 +99,7 @@ class CheckoutControllerTest {
     void shouldExecuteMercadoPagoCheckout() throws Exception {
         InvoiceLine line = new InvoiceLine(UUID.randomUUID(), tenantId, "S1", "Service", BigDecimal.ONE, new BigDecimal("150.00"), "TAXABLE_ONEROUS");
         Invoice invoice = new Invoice(
-                invoiceId, tenantId, workOrderId, quoteId, VoucherType.FACTURA,
+                invoiceId, tenantId, workOrderId, quoteId, VoucherType.INVOICE,
                 new Series("F001"), new Correlative(1), "20123456789", "EMPRESA S.A.C.",
                 Currency.PEN, List.of(line), InvoiceStatus.ACCEPTED, "https://pdf.url",
                 "qr-content", null, Instant.now(), null
@@ -128,7 +128,7 @@ class CheckoutControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.voucherType").value("FACTURA"))
+                .andExpect(jsonPath("$.voucherType").value("INVOICE"))
                 .andExpect(jsonPath("$.series").value("F001"))
                 .andExpect(jsonPath("$.payment.provider").value("MERCADO_PAGO"));
     }

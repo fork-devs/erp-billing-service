@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS invoices (
     issued_at          TIMESTAMP NOT NULL DEFAULT now(),
     voided_at          TIMESTAMP,
     CONSTRAINT uq_invoice_tenant_series_correlativo UNIQUE (tenant_id, series, correlativo),
-    CONSTRAINT ck_invoice_voucher_type CHECK (voucher_type IN ('FACTURA', 'BOLETA')),
+    CONSTRAINT ck_invoice_voucher_type CHECK (voucher_type IN ('INVOICE', 'RECEIPT')),
     CONSTRAINT ck_invoice_sunat_status CHECK (sunat_status IN ('BORRADOR', 'PENDIENTE_SUNAT', 'ACEPTADO', 'OBSERVADO', 'ANULADO'))
 );
 

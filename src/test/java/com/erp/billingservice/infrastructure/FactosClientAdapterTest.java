@@ -59,7 +59,7 @@ class FactosClientAdapterTest {
                 new BigDecimal("1"), new BigDecimal("5900.00"), "TAXABLE_ONEROUS"
         );
         Invoice invoice = new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.FACTURA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.INVOICE,
                 new Series("F001"), new Correlative(1), "20123456789",
                 "CLIENT SAC", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null
@@ -90,7 +90,7 @@ class FactosClientAdapterTest {
                 new BigDecimal("1"), new BigDecimal("5900.00"), "TAXABLE_ONEROUS"
         );
         Invoice invoice = new Invoice(
-                UUID.randomUUID(), tenantId, workOrderId, VoucherType.FACTURA,
+                UUID.randomUUID(), tenantId, workOrderId, VoucherType.INVOICE,
                 new Series("F001"), new Correlative(1), "20123456789",
                 "CLIENT SAC", Currency.PEN, List.of(line),
                 InvoiceStatus.DRAFT, null, null, null, null, null
