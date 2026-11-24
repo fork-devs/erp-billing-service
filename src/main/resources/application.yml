@@ -40,6 +40,10 @@ spring:
     placeholders:
       appRolePassword: ${ERP_APP_DB_PASSWORD:}
 
+billing:
+  electronic-invoicing:
+    enabled: ${ELECTRONIC_INVOICING_ENABLED:false}
+
 erp:
   auth:
     jwks-url: ${JWKS_URL:https://auth.erp-automotriz.com/.well-known/jwks.json}
