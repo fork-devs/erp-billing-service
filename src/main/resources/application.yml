@@ -50,6 +50,10 @@ erp:
   factos:
     base-url: ${FACTOS_BASE_URL:https://factos-hwjz.onrender.com}
     api-key: ${FACTOS_API_KEY:}
+  mercadopago:
+    access-token: ${MERCADOPAGO_ACCESS_TOKEN:}
+    public-key: ${MERCADOPAGO_PUBLIC_KEY:}
+    webhook-secret: ${MERCADOPAGO_WEBHOOK_SECRET:}
   outbox:
     relay-enabled: ${OUTBOX_RELAY_ENABLED:true}
     poll-interval-ms: ${OUTBOX_POLL_INTERVAL_MS:5000}
