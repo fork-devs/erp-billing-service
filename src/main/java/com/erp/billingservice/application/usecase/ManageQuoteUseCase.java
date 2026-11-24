@@ -10,7 +10,9 @@ import java.util.UUID;
 public interface ManageQuoteUseCase {
     Quote getQuote(UUID quoteId);
     List<Quote> listQuotes(UUID branchId, QuoteStatus status);
+    List<Quote> listMyQuotes(UUID userId);
     Quote updateDiscount(UUID quoteId, BigDecimal discountPercentage, String notes);
+    Quote syncQuote(UUID quoteId);
     Quote approveQuote(UUID quoteId);
     Quote cancelQuote(UUID quoteId);
 }

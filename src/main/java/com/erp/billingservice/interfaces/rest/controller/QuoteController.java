@@ -43,6 +43,21 @@ public class QuoteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(QuoteResponse.from(quote));
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<QuoteResponse>> listMyQuotes(
+            org.springframework.security.core.Authentication auth) {
+        UUID userId = null;
+        if (auth != null && auth.getName() != null) {
+            try {
+                userId = UUID.fromString(auth.getName());
+            } catch (IllegalArgumentException ignored) {}
+        }
+        return ResponseEntity.ok(manageQuoteUseCase.listMyQuotes(userId).stream()
+                .map(QuoteResponse::from)
+                .toList());
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<QuoteResponse> getQuote(@PathVariable UUID id) {
@@ -68,6 +83,13 @@ public class QuoteController {
     ) {
         Quote updated = manageQuoteUseCase.updateDiscount(id, request.discountPercentage(), request.notes());
         return ResponseEntity.ok(QuoteResponse.from(updated));
+    }
+
+    @PutMapping("/{id}/sync")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
+    public ResponseEntity<QuoteResponse> syncQuote(@PathVariable UUID id) {
+        Quote synced = manageQuoteUseCase.syncQuote(id);
+        return ResponseEntity.ok(QuoteResponse.from(synced));
     }
 
     @PostMapping("/{id}/approvals")
