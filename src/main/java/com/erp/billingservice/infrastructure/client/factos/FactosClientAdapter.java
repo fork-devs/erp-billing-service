@@ -12,6 +12,7 @@ import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -21,6 +22,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 @Component
+@ConditionalOnProperty(name = "billing.electronic-invoicing.enabled", havingValue = "true")
 public class FactosClientAdapter implements FiscalProviderPort {
 
     private static final Logger log = LoggerFactory.getLogger(FactosClientAdapter.class);

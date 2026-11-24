@@ -12,4 +12,5 @@ public interface QuoteRepositoryPort {
     Optional<Quote> findById(UUID quoteId);
     Optional<Quote> findByWorkOrderId(UUID workOrderId);
     List<Quote> findByBranchId(UUID branchId, QuoteStatus status);
+    List<Quote> findAll();
 }

@@ -132,6 +132,43 @@ public class QuoteApplicationService implements CreateQuoteUseCase, ManageQuoteU
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Quote> listMyQuotes(UUID userId) {
+        return quoteRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public Quote syncQuote(UUID quoteId) {
+        Quote quote = getQuote(quoteId);
+        WorkOrderClientPort.WorkOrderDetail workOrder = workOrderClient.getWorkOrder(quote.getWorkOrderId())
+                .orElseThrow(() -> new QuoteNotFoundException("Work order not found with ID: " + quote.getWorkOrderId()));
+        List<QuoteItem> refreshedItems = new ArrayList<>();
+        if (workOrder.items() != null) {
+            for (WorkOrderClientPort.WorkOrderItem item : workOrder.items()) {
+                QuoteItemType type;
+                try {
+                    type = QuoteItemType.valueOf(item.type().toUpperCase());
+                } catch (Exception e) {
+                    type = QuoteItemType.SERVICE;
+                }
+                refreshedItems.add(new QuoteItem(
+                        UUID.randomUUID(),
+                        quote.getTenantId(),
+                        quote.getId(),
+                        type,
+                        item.description() != null ? item.description() : "Item",
+                        item.quantity() != null ? item.quantity() : BigDecimal.ONE,
+                        item.unitPrice() != null ? item.unitPrice() : BigDecimal.ZERO,
+                        item.subtotal()
+                ));
+            }
+        }
+        quote.syncItems(refreshedItems);
+        return quoteRepository.save(quote);
+    }
+
+    @Override
     @Transactional
     public Quote updateDiscount(UUID quoteId, BigDecimal discountPercentage, String notes) {
         Quote quote = getQuote(quoteId);
