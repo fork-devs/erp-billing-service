@@ -51,7 +51,7 @@ class CheckoutControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/billing/checkouts executes direct checkout and returns 201 Created")
+    @DisplayName("POST /api/v1/checkouts executes direct checkout and returns 201 Created")
     void shouldExecuteDirectCheckout() throws Exception {
         InvoiceLine line = new InvoiceLine(UUID.randomUUID(), tenantId, "S1", "Service", BigDecimal.ONE, new BigDecimal("200.00"), "TAXABLE_ONEROUS");
         Invoice invoice = new Invoice(
@@ -80,7 +80,7 @@ class CheckoutControllerTest {
                 }
                 """.formatted(quoteId);
 
-        mockMvc.perform(post("/api/v1/billing/checkouts")
+        mockMvc.perform(post("/api/v1/checkouts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -95,7 +95,7 @@ class CheckoutControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/billing/checkouts/mercadopago executes Mercado Pago checkout")
+    @DisplayName("POST /api/v1/checkouts/mercadopago executes Mercado Pago checkout")
     void shouldExecuteMercadoPagoCheckout() throws Exception {
         InvoiceLine line = new InvoiceLine(UUID.randomUUID(), tenantId, "S1", "Service", BigDecimal.ONE, new BigDecimal("150.00"), "TAXABLE_ONEROUS");
         Invoice invoice = new Invoice(
@@ -124,7 +124,7 @@ class CheckoutControllerTest {
                 }
                 """.formatted(quoteId);
 
-        mockMvc.perform(post("/api/v1/billing/checkouts/mercadopago")
+        mockMvc.perform(post("/api/v1/checkouts/mercadopago")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())

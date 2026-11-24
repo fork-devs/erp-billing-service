@@ -57,7 +57,7 @@ class QuoteControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/billing/quotes creates a quote and returns 201 Created")
+    @DisplayName("POST /api/v1/quotes creates a quote and returns 201 Created")
     void shouldCreateQuote() throws Exception {
         QuoteItem item = new QuoteItem(UUID.randomUUID(), tenantId, null, QuoteItemType.SERVICE,
                 "Brake test", BigDecimal.ONE, new BigDecimal("100.00"), null);
@@ -74,7 +74,7 @@ class QuoteControllerTest {
                 }
                 """.formatted(workOrderId, branchId);
 
-        mockMvc.perform(post("/api/v1/billing/quotes")
+        mockMvc.perform(post("/api/v1/quotes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -85,7 +85,7 @@ class QuoteControllerTest {
     }
 
     @Test
-    @DisplayName("GET /api/v1/billing/quotes/{id} returns quote detail")
+    @DisplayName("GET /api/v1/quotes/{id} returns quote detail")
     void shouldGetQuoteDetail() throws Exception {
         QuoteItem item = new QuoteItem(UUID.randomUUID(), tenantId, null, QuoteItemType.SERVICE,
                 "Oil change", BigDecimal.ONE, new BigDecimal("80.00"), null);
@@ -93,26 +93,26 @@ class QuoteControllerTest {
 
         when(manageQuoteUseCase.getQuote(quoteId)).thenReturn(quote);
 
-        mockMvc.perform(get("/api/v1/billing/quotes/" + quoteId))
+        mockMvc.perform(get("/api/v1/quotes/" + quoteId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.workOrderId").value(workOrderId.toString()))
                 .andExpect(jsonPath("$.items[0].name").value("Oil change"));
     }
 
     @Test
-    @DisplayName("GET /api/v1/billing/quotes?branchId={branchId} lists quotes for a branch")
+    @DisplayName("GET /api/v1/quotes?branchId={branchId} lists quotes for a branch")
     void shouldListQuotesByBranch() throws Exception {
         Quote quote = Quote.create(tenantId, workOrderId, branchId, BigDecimal.ZERO, null, List.of());
         when(manageQuoteUseCase.listQuotes(eq(branchId), any())).thenReturn(List.of(quote));
 
-        mockMvc.perform(get("/api/v1/billing/quotes")
+        mockMvc.perform(get("/api/v1/quotes")
                         .param("branchId", branchId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].branchId").value(branchId.toString()));
     }
 
     @Test
-    @DisplayName("PUT /api/v1/billing/quotes/{id} updates discount and recalculates totals")
+    @DisplayName("PUT /api/v1/quotes/{id} updates discount and recalculates totals")
     void shouldUpdateDiscount() throws Exception {
         QuoteItem item = new QuoteItem(UUID.randomUUID(), tenantId, null, QuoteItemType.SERVICE,
                 "Repair", BigDecimal.ONE, new BigDecimal("100.00"), null);
@@ -129,7 +129,7 @@ class QuoteControllerTest {
                 }
                 """;
 
-        mockMvc.perform(put("/api/v1/billing/quotes/" + quoteId)
+        mockMvc.perform(put("/api/v1/quotes/" + quoteId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -138,27 +138,27 @@ class QuoteControllerTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/billing/quotes/{id}/approvals approves quote")
+    @DisplayName("POST /api/v1/quotes/{id}/approvals approves quote")
     void shouldApproveQuote() throws Exception {
         Quote quote = Quote.create(tenantId, workOrderId, branchId, BigDecimal.ZERO, null, List.of());
         quote.approve();
 
         when(manageQuoteUseCase.approveQuote(quoteId)).thenReturn(quote);
 
-        mockMvc.perform(post("/api/v1/billing/quotes/" + quoteId + "/approvals"))
+        mockMvc.perform(post("/api/v1/quotes/" + quoteId + "/approvals"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("APPROVED"));
     }
 
     @Test
-    @DisplayName("POST /api/v1/billing/quotes/{id}/cancellations cancels quote")
+    @DisplayName("POST /api/v1/quotes/{id}/cancellations cancels quote")
     void shouldCancelQuote() throws Exception {
         Quote quote = Quote.create(tenantId, workOrderId, branchId, BigDecimal.ZERO, null, List.of());
         quote.cancel();
 
         when(manageQuoteUseCase.cancelQuote(quoteId)).thenReturn(quote);
 
-        mockMvc.perform(post("/api/v1/billing/quotes/" + quoteId + "/cancellations"))
+        mockMvc.perform(post("/api/v1/quotes/" + quoteId + "/cancellations"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CANCELED"));
     }
