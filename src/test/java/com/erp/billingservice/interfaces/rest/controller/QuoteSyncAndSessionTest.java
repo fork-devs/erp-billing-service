@@ -1,9 +1,13 @@
 package com.erp.billingservice.interfaces.rest.controller;
 
+import com.erp.billingservice.application.service.PaymentSessionService;
 import com.erp.billingservice.domain.exception.DomainValidationException;
 import com.erp.billingservice.domain.model.Quote;
 import com.erp.billingservice.domain.model.QuoteItem;
 import com.erp.billingservice.domain.model.QuoteItemType;
+import com.erp.billingservice.infrastructure.client.payment.CashPaymentSessionStrategy;
+import com.erp.billingservice.infrastructure.client.payment.MercadoPagoPaymentSessionStrategy;
+import com.erp.billingservice.infrastructure.client.payment.StripePaymentSessionStrategy;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
@@ -33,9 +37,15 @@ class QuoteSyncAndSessionTest {
     }
 
     @Test
-    void paymentSessionControllerCreatesMercadoPagoSession() {
-        PaymentSessionController controller = new PaymentSessionController();
+    void paymentSessionControllerUsesStrategyPerProvider() {
+        PaymentSessionService service = new PaymentSessionService(List.of(
+                new MercadoPagoPaymentSessionStrategy(),
+                new StripePaymentSessionStrategy(),
+                new CashPaymentSessionStrategy()
+        ));
+        PaymentSessionController controller = new PaymentSessionController(service);
         UUID quoteId = UUID.randomUUID();
+
         ResponseEntity<PaymentSessionController.PaymentSessionResponse> res = controller.createPaymentSession(
                 new PaymentSessionController.CreatePaymentSessionRequest(quoteId, null, "MERCADOPAGO")
         );
@@ -43,5 +53,9 @@ class QuoteSyncAndSessionTest {
         assertEquals("MERCADOPAGO", res.getBody().provider());
         assertEquals("PENDING", res.getBody().status());
         assertNotNull(res.getBody().checkoutUrl());
+
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.createPaymentSession(new PaymentSessionController.CreatePaymentSessionRequest(quoteId, null, "UNKNOWN"))
+        );
     }
 }

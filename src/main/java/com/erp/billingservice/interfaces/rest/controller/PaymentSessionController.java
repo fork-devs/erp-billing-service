@@ -1,5 +1,7 @@
 package com.erp.billingservice.interfaces.rest.controller;
 
+import com.erp.billingservice.application.service.PaymentSessionService;
+import com.erp.billingservice.domain.port.PaymentSessionStrategy;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
@@ -11,14 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
-import java.util.Set;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/payments")
 public class PaymentSessionController {
-
-    private static final Set<String> SUPPORTED_PROVIDERS = Set.of("MERCADOPAGO", "STRIPE", "CASH");
 
     public record CreatePaymentSessionRequest(
             UUID quoteId,
@@ -34,33 +33,35 @@ public class PaymentSessionController {
             String status,
             String checkoutUrl,
             Instant createdAt
-    ) {}
+    ) {
+        public static PaymentSessionResponse from(PaymentSessionStrategy.PaymentSessionResult result) {
+            return new PaymentSessionResponse(
+                    result.sessionId(),
+                    result.provider(),
+                    result.quoteId(),
+                    result.invoiceId(),
+                    result.status(),
+                    result.checkoutUrl(),
+                    result.createdAt()
+            );
+        }
+    }
+
+    private final PaymentSessionService paymentSessionService;
+
+    public PaymentSessionController(PaymentSessionService paymentSessionService) {
+        this.paymentSessionService = paymentSessionService;
+    }
 
     @PostMapping("/sessions")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PaymentSessionResponse> createPaymentSession(
             @Valid @RequestBody CreatePaymentSessionRequest request) {
-        String normalizedProvider = request.provider().trim().toUpperCase();
-        if (!SUPPORTED_PROVIDERS.contains(normalizedProvider)) {
-            throw new IllegalArgumentException("Unsupported payment session provider: " + request.provider());
-        }
-        if (request.quoteId() == null && request.invoiceId() == null) {
-            throw new IllegalArgumentException("Either quoteId or invoiceId is required");
-        }
-        UUID sessionId = UUID.randomUUID();
-        String checkoutUrl = switch (normalizedProvider) {
-            case "MERCADOPAGO" -> "https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=pref-" + sessionId;
-            case "STRIPE" -> "https://checkout.stripe.com/c/pay/cs_" + sessionId;
-            default -> null;
-        };
-        return ResponseEntity.status(HttpStatus.CREATED).body(new PaymentSessionResponse(
-                sessionId,
-                normalizedProvider,
+        PaymentSessionStrategy.PaymentSessionResult result = paymentSessionService.createSession(
+                request.provider(),
                 request.quoteId(),
-                request.invoiceId(),
-                "PENDING",
-                checkoutUrl,
-                Instant.now()
-        ));
+                request.invoiceId()
+        );
+        return ResponseEntity.status(HttpStatus.CREATED).body(PaymentSessionResponse.from(result));
     }
 }
