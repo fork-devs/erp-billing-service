@@ -91,6 +91,17 @@ public class Quote {
         calculateTotals();
     }
 
+    public void syncItems(List<QuoteItem> refreshedItems) {
+        if (this.status != QuoteStatus.DRAFT) {
+            throw new DomainValidationException("Only DRAFT quotes can be synchronized, current status: " + this.status);
+        }
+        this.items.clear();
+        if (refreshedItems != null) {
+            this.items.addAll(refreshedItems);
+        }
+        calculateTotals();
+    }
+
     public void approve() {
         if (this.status != QuoteStatus.DRAFT) {
             throw new DomainValidationException("Only DRAFT quotes can be approved, current status: " + this.status);

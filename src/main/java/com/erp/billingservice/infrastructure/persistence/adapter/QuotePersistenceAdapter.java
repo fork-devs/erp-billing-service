@@ -45,4 +45,9 @@ public class QuotePersistenceAdapter implements QuoteRepositoryPort {
                 : repository.findByBranchId(branchId);
         return entities.stream().map(QuoteEntityMapper::toDomain).toList();
     }
+
+    @Override
+    public List<Quote> findAll() {
+        return repository.findAll().stream().map(QuoteEntityMapper::toDomain).toList();
+    }
 }
