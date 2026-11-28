@@ -93,14 +93,14 @@ public class QuoteController {
     }
 
     @PostMapping("/{id}/approvals")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'CUSTOMER', 'CLIENTE')")
     public ResponseEntity<QuoteResponse> approveQuote(@PathVariable UUID id) {
         Quote approved = manageQuoteUseCase.approveQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(approved));
     }
 
     @PostMapping("/{id}/cancellations")
-    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
+    @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'CUSTOMER', 'CLIENTE')")
     public ResponseEntity<QuoteResponse> cancelQuote(@PathVariable UUID id) {
         Quote canceled = manageQuoteUseCase.cancelQuote(id);
         return ResponseEntity.ok(QuoteResponse.from(canceled));
