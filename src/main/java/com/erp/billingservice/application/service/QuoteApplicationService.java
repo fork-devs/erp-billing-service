@@ -60,7 +60,7 @@ public class QuoteApplicationService implements CreateQuoteUseCase, ManageQuoteU
         }
 
         Optional<Quote> existing = quoteRepository.findByWorkOrderId(command.workOrderId());
-        if (existing.isPresent()) {
+        if (existing.isPresent() && existing.get().getStatus() != QuoteStatus.CANCELED) {
             throw new QuoteConflictException("Work order " + command.workOrderId() + " already has an associated quote");
         }
 
@@ -134,7 +134,14 @@ public class QuoteApplicationService implements CreateQuoteUseCase, ManageQuoteU
     @Override
     @Transactional(readOnly = true)
     public List<Quote> listMyQuotes(UUID userId) {
-        return quoteRepository.findAll();
+        if (userId == null) {
+            return List.of();
+        }
+        return quoteRepository.findAll().stream()
+                .filter(q -> workOrderClient.getWorkOrder(q.getWorkOrderId())
+                        .map(wo -> userId.equals(wo.customerId()))
+                        .orElse(false))
+                .toList();
     }
 
     @Override

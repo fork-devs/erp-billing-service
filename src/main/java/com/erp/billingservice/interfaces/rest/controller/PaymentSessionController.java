@@ -32,16 +32,24 @@ public class PaymentSessionController {
             UUID invoiceId,
             String status,
             String checkoutUrl,
+            String sandboxCheckoutUrl,
+            String currency,
+            String externalReference,
             Instant createdAt
     ) {
         public static PaymentSessionResponse from(PaymentSessionStrategy.PaymentSessionResult result) {
+            String normalizedProvider = "MERCADOPAGO".equalsIgnoreCase(result.provider()) ? "MERCADO_PAGO" : result.provider();
+            String extRef = result.quoteId() != null ? result.quoteId().toString() : (result.invoiceId() != null ? result.invoiceId().toString() : result.sessionId().toString());
             return new PaymentSessionResponse(
                     result.sessionId(),
-                    result.provider(),
+                    normalizedProvider,
                     result.quoteId(),
                     result.invoiceId(),
                     result.status(),
                     result.checkoutUrl(),
+                    result.checkoutUrl() != null ? result.checkoutUrl().replace("www.mercadopago.com.pe", "sandbox.mercadopago.com.pe") : null,
+                    "PEN",
+                    extRef,
                     result.createdAt()
             );
         }

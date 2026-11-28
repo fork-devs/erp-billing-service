@@ -89,7 +89,8 @@ public class VoucherController {
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR', 'TECHNICIAN', 'MECANICO')")
     public ResponseEntity<List<VoucherResponse>> listVouchers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) UUID branchId
     ) {
         List<Invoice> invoices = getInvoiceUseCase.listInvoices(page, size);
         List<VoucherResponse> responses = invoices.stream()
@@ -110,6 +111,9 @@ public class VoucherController {
     ) {
         Invoice invoice = invoiceRepository.findById(voucherId)
                 .orElseThrow(() -> new InvoiceNotFoundException(voucherId));
+        if (invoice.getSunatStatus() == com.erp.billingservice.domain.model.InvoiceStatus.VOIDED) {
+            throw new com.erp.billingservice.domain.exception.InvoiceConflictException("Cannot register payment on a canceled/voided voucher");
+        }
 
         String idempotencyKey = (idempotencyKeyHeader != null && !idempotencyKeyHeader.trim().isEmpty())
                 ? idempotencyKeyHeader.trim()

@@ -25,6 +25,7 @@ public class CheckoutController {
     @PostMapping
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<CheckoutResponse> directCheckout(@Valid @RequestBody DirectCheckoutRequest request) {
+        validateTaxDocument(request.customerDocumentType(), request.customerDocumentNumber());
         ExecuteCheckoutUseCase.DirectCheckoutCommand command = new ExecuteCheckoutUseCase.DirectCheckoutCommand(
                 request.quoteId(),
                 request.resolvedVoucherType(),
@@ -41,6 +42,7 @@ public class CheckoutController {
     @PostMapping("/mercadopago")
     @PreAuthorize("hasAnyRole('SUPERADMIN', 'WORKSHOP_ADMIN', 'ADMIN_TALLER', 'SERVICE_ADVISOR', 'ASESOR')")
     public ResponseEntity<CheckoutResponse> mercadoPagoCheckout(@Valid @RequestBody MercadoPagoCheckoutRequest request) {
+        validateTaxDocument(request.customerDocumentType(), request.customerDocumentNumber());
         ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand command = new ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand(
                 request.quoteId(),
                 request.resolvedVoucherType(),
@@ -52,5 +54,19 @@ public class CheckoutController {
 
         ExecuteCheckoutUseCase.CheckoutResult result = executeCheckoutUseCase.executeMercadoPagoCheckout(command);
         return ResponseEntity.status(HttpStatus.CREATED).body(CheckoutResponse.from(result));
+    }
+
+    private static void validateTaxDocument(String docType, String docNumber) {
+        if (docType == null || docNumber == null) {
+            return;
+        }
+        String type = docType.trim().toUpperCase();
+        String num = docNumber.trim();
+        if ("DNI".equals(type) && !num.matches("\\d{8}")) {
+            throw new com.erp.billingservice.domain.exception.DomainValidationException("DNI must have exactly 8 digits");
+        }
+        if ("RUC".equals(type) && !num.matches("\\d{11}")) {
+            throw new com.erp.billingservice.domain.exception.DomainValidationException("RUC must have exactly 11 digits");
+        }
     }
 }
