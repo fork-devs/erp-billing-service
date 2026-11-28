@@ -50,7 +50,7 @@ class QuoteSyncAndSessionTest {
                 new PaymentSessionController.CreatePaymentSessionRequest(quoteId, null, "MERCADOPAGO")
         );
         assertEquals(201, res.getStatusCode().value());
-        assertEquals("MERCADOPAGO", res.getBody().provider());
+        assertEquals("MERCADO_PAGO", res.getBody().provider());
         assertEquals("PENDING", res.getBody().status());
         assertNotNull(res.getBody().checkoutUrl());
 

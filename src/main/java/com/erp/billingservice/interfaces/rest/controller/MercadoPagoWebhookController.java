@@ -1,5 +1,10 @@
 package com.erp.billingservice.interfaces.rest.controller;
 
+import com.erp.billingservice.application.usecase.ExecuteCheckoutUseCase;
+import com.erp.billingservice.domain.model.VoucherType;
+import com.erp.billingservice.domain.port.MercadoPagoClientPort;
+import com.erp.billingservice.infrastructure.persistence.repository.SpringDataPaymentIntentRepository;
+import com.erp.billingservice.infrastructure.persistence.rls.TenantContextHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,15 @@ public class MercadoPagoWebhookController {
 
     private static final Logger log = LoggerFactory.getLogger(MercadoPagoWebhookController.class);
     private final String webhookSecret;
+
+    @Autowired(required = false)
+    private MercadoPagoClientPort mercadoPagoClient;
+
+    @Autowired(required = false)
+    private SpringDataPaymentIntentRepository paymentIntentRepository;
+
+    @Autowired(required = false)
+    private ExecuteCheckoutUseCase executeCheckoutUseCase;
 
     public MercadoPagoWebhookController() {
         this("");
@@ -54,6 +68,42 @@ public class MercadoPagoWebhookController {
 
         log.info("Received verified Mercado Pago webhook: requestId={}, resourceId={}, topic={}",
                 requestId, resourceId, topic);
+
+        if (resourceId != null && !resourceId.isBlank()
+                && mercadoPagoClient != null
+                && paymentIntentRepository != null
+                && executeCheckoutUseCase != null) {
+            mercadoPagoClient.verifyPayment(resourceId).ifPresent(verification -> {
+                if ("approved".equalsIgnoreCase(verification.status())) {
+                    paymentIntentRepository.findByExternalReference(resourceId).ifPresent(intent -> {
+                        if (intent.getAmount() != null && verification.transactionAmount() != null
+                                && intent.getAmount().compareTo(verification.transactionAmount()) == 0
+                                && !"COMPLETED".equalsIgnoreCase(intent.getStatus())) {
+                            TenantContextHolder.setTenantId(intent.getTenantId());
+                            try {
+                                VoucherType vType = "INVOICE".equalsIgnoreCase(intent.getVoucherType())
+                                        ? VoucherType.INVOICE : VoucherType.RECEIPT;
+                                executeCheckoutUseCase.executeMercadoPagoCheckout(
+                                        new ExecuteCheckoutUseCase.MercadoPagoCheckoutCommand(
+                                                intent.getQuoteId(),
+                                                vType,
+                                                intent.getCustomerDocumentType(),
+                                                intent.getCustomerDocumentNumber(),
+                                                intent.getCustomerName(),
+                                                resourceId
+                                        )
+                                );
+                                intent.setStatus("COMPLETED");
+                                intent.setUpdatedAt(java.time.Instant.now());
+                                paymentIntentRepository.save(intent);
+                            } finally {
+                                TenantContextHolder.clear();
+                            }
+                        }
+                    });
+                }
+            });
+        }
         return ResponseEntity.ok().build();
     }
 
